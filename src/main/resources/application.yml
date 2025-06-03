@@ -1,0 +1,148 @@
+spring:
+  application:
+    name: api-testing-hub
+
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+  # Cache Configuration (in-memory for stateless app)
+  cache:
+    type: simple
+
+  # Jackson Configuration
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    time-zone: UTC
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: ${SERVER_CONTEXT_PATH:/api/v1}
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# Management/Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when-authorized
+      show-components: always
+  info:
+    env:
+      enabled: true
+
+# Logging Configuration
+logging:
+  level:
+    com.apitestinghub: ${LOG_LEVEL_APP:INFO}
+    root: ${LOG_LEVEL_ROOT:INFO}
+    org.springframework.web: WARN
+    reactor.netty: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# Custom Application Properties
+app:
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5173}
+    allowed-methods: ${CORS_ALLOWED_METHODS:GET,POST,PUT,DELETE,OPTIONS}
+    allowed-headers: ${CORS_ALLOWED_HEADERS:*}
+    allow-credentials: ${CORS_ALLOW_CREDENTIALS:true}
+
+  request:
+    timeout: ${APP_REQUEST_TIMEOUT:30000}
+    max-size: ${APP_REQUEST_MAX_SIZE:10MB}
+
+  ai:
+    github-models:
+      # GitHub Models Configuration for OpenAI GPT-4.1
+      api-key: ${GITHUB_TOKEN:}
+      endpoint: ${GITHUB_MODELS_ENDPOINT:https://models.inference.ai.azure.com}
+      model: ${OPENAI_MODEL:gpt-4o}
+      max-tokens: ${OPENAI_MAX_TOKENS:4000}
+      temperature: ${OPENAI_TEMPERATURE:0.7}
+
+    prompts:
+      documentation: |
+        You are an expert API documentation generator. Analyze the following API request and response to create comprehensive documentation.
+
+        === API REQUEST ===
+        Method: %s
+        URL: %s
+        Headers: %s
+        Query Parameters: %s
+        Request Body: %s
+
+        === API RESPONSE ===
+        Status Code: %d
+        Status Text: %s
+        Response Headers: %s
+        Response Body: %s
+        Response Time: %d ms
+
+        === DOCUMENTATION REQUIREMENTS ===
+        Generate professional API documentation in markdown format including:
+
+        1. **Endpoint Overview** - Clear description of functionality
+        2. **HTTP Method & URL** - Request details and path structure
+        3. **Request Parameters** - Headers, query params, and body format
+        4. **Response Format** - Status codes, headers, and response structure
+        5. **Example Usage** - Sample request/response with explanation
+        6. **Error Handling** - Common error scenarios and responses
+        7. **Performance Notes** - Based on response time and data size
+
+        Focus on clarity, completeness, and developer usability.
+
+      description: |
+        You are an API analysis expert. Generate a concise, professional description of this API endpoint's purpose and functionality.
+
+        === REQUEST DETAILS ===
+        Method: %s
+        URL: %s  
+        Headers: %s
+        Query Parameters: %s
+        Request Body: %s
+
+        === TASK ===
+        Provide a clear, 1-2 sentence description that explains:
+        - What this endpoint does
+        - Its primary purpose/function
+        - Key parameters or data it processes
+
+        Be concise but informative. Focus on the business functionality, not technical implementation details.
+
+      analysis: |
+        You are an API response analyst. Analyze the following API response and provide actionable insights.
+
+        === RESPONSE DETAILS ===
+        Status Code: %d
+        Status Text: %s
+        Response Headers: %s
+        Response Body: %s
+        Response Time: %d ms
+
+        === ANALYSIS REQUIREMENTS ===
+        Provide a structured analysis covering:
+
+        1. **Status Assessment** - What the status code indicates about the request
+        2. **Response Structure** - Data format, completeness, and quality
+        3. **Performance Analysis** - Response time evaluation and optimization suggestions
+        4. **Data Insights** - Key information extracted from the response
+        5. **Potential Issues** - Any errors, warnings, or concerns identified
+        6. **Recommendations** - Suggestions for improvements or next steps
+
+        Keep analysis concise but thorough, focusing on actionable insights.

@@ -1,0 +1,56 @@
+# Test Profile Configuration
+spring:
+  # Test cache configuration
+  cache:
+    type: simple
+
+  # Test Jackson settings
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+
+# Test server configuration
+server:
+  port: 0  # Random port for tests to avoid conflicts
+
+# Test actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+
+# Test logging (minimal for faster test execution)
+logging:
+  level:
+    com.apitestinghub: WARN
+    org.springframework: WARN
+    reactor.netty: WARN
+    org.springframework.web: ERROR
+  pattern:
+    console: "%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"
+
+# Test-specific app configuration
+app:
+  cors:
+    allowed-origins: "*"
+    allowed-methods: "GET,POST,PUT,DELETE,OPTIONS"
+    allowed-headers: "*"
+    allow-credentials: true
+
+  request:
+    timeout: 5000  # Shorter timeout for tests
+    max-size: 1MB  # Smaller size for tests
+
+  ai:
+    github-models:
+      api-key: "test-api-key"
+      endpoint: "http://localhost:8080/mock"
+      model: "test-model"
+      max-tokens: 100
+      temperature: 0.1

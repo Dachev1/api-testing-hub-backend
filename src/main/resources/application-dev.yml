@@ -1,0 +1,48 @@
+# Development Profile Configuration
+spring:
+  # Development cache configuration
+  cache:
+    type: simple
+    cache-names: api-cache
+
+  # Development Jackson settings
+  jackson:
+    serialization:
+      indent-output: true  # Pretty print JSON in development
+
+# Development server configuration
+server:
+  # Enable detailed error responses in development
+  error:
+    include-stacktrace: always
+    include-exception: true
+
+# Development actuator configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"  # Expose all endpoints in development
+  endpoint:
+    health:
+      show-details: always
+    env:
+      show-values: always
+
+# Development logging
+logging:
+  level:
+    com.apitestinghub: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.web.reactive: DEBUG
+    reactor.netty.http.client: DEBUG
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){faint} %clr([%thread]){blue} %clr(%-5level) %clr(%logger{36}){cyan} - %msg%n"
+
+# Development-specific app configuration
+app:
+  cors:
+    allowed-origins: "http://localhost:3000,http://localhost:5173,http://localhost:4200"
+  request:
+    timeout: 60000  # Longer timeout for development/debugging
